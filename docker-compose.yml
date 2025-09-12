@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: todo_service_mongo
+    restart: unless-stopped
+    environment:
+      # Initial database (no auth)
+      MONGO_INITDB_DATABASE: task_db
+    ports:
+      - '27018:27017'
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test:
+        ['CMD', 'mongosh', '--quiet', '--eval', 'db.runCommand({ ping: 1 })']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: todo_service_app
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      # Direct URI has priority in code
+      TASK_APP_MONGO_URI: mongodb://mongo:27017/task_db
+      MONGO_HOST: mongo
+      MONGO_PORT: '27017'
+      MONGO_INITDB_DATABASE: task_db
+      PORT: '3000'
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+
+volumes:
+  mongo_data:
