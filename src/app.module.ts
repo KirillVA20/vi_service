@@ -12,6 +12,7 @@ import { TaskModule } from './task/task.module';
     }),
     MongooseModule.forRootAsync({
       useFactory: () => {
+        console.log(process.env.TASK_APP_MONGO_URI)
         const directUri = process.env.TASK_APP_MONGO_URI;
         if (
           directUri &&
