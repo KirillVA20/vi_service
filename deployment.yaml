@@ -22,17 +22,3 @@ spec:
             value: "development"
           - name: TASK_APP_MONGO_URI
             value: "mongodb://mongo:27017/task_db"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: vi-service-app
-spec:
-  type: ClusterIP 
-  selector:
-    app: vi-service-app
-  ports:
-    - protocol: TCP
-      port: 80 # Порт, на котором сервис будет доступен внутри кластера
-      targetPort: 3000 # Порт контейнера, на который сервис будет направлять трафик
-      nodePort: 31000 
